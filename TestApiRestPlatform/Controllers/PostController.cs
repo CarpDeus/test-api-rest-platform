@@ -29,7 +29,8 @@ public class PostController : ControllerBase
         var authHeader = Request.Headers["Authorization"].FirstOrDefault();
         var expectedAuth = _configuration["Authentication:ExpectedAuthHeader"];
 
-        _logger.LogInformation("Authenticate request received with auth header: {AuthHeader}", authHeader);
+        var sanitizedAuthHeader = authHeader?.Replace("\n", "").Replace("\r", "") ?? "null";
+        _logger.LogInformation("Authenticate request received with auth header: {AuthHeader}", sanitizedAuthHeader);
 
         if (string.IsNullOrEmpty(authHeader))
         {

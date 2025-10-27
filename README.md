@@ -112,13 +112,27 @@ cd TestApiRestPlatform
 dotnet run
 ```
 
-The application will start on http://localhost:5180 by default (or as configured in launchSettings.json).
+The application will start on http://localhost:5180 by default (or as configured in launchSettings.json). The Swagger UI will automatically open in your browser.
 
 ## Logging
 
-All requests are logged to `logs/api-{date}.txt` using Serilog. Logs include:
-- Request method and path
-- Response status code
-- Response time
-- Authentication attempts
-- Validation results
+All API requests are logged using structured logging with Serilog. Logs are written to both:
+- **Console** - Real-time output for development
+- **File** - `logs/api-{date}.txt` for persistent storage
+
+Each log entry includes comprehensive request details:
+- **Endpoint** - The API path being accessed
+- **HTTP Method** - GET, POST, PUT, DELETE, PATCH
+- **Source IP Address** - The client's IP address
+- **Headers** - All request headers (Authorization headers are sanitized)
+- **Query Parameters** - All URL query string parameters
+- **Request Body** - The complete request body (if present)
+- **Status Code** - HTTP response status code
+
+Example log entry:
+```
+2025-10-27 20:54:19.500 +00:00 [INF] API Request: /api/post/validate POST from ::1 - Status: 200. 
+Headers: {"Accept":"*/*","Host":"localhost:5180","Authorization":"Bearer test-secret-key"}, 
+QueryParams: {}, 
+Body: {"name":"John","email":"john@example.com"}
+```

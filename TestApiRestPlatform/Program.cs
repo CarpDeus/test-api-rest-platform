@@ -1,4 +1,5 @@
 using Serilog;
+using TestApiRestPlatform.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,9 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
 });
 
-app.UseSerilogRequestLogging();
+// Add custom request logging middleware
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 app.MapControllers();
 
 app.Run();

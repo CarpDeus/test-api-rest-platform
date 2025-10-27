@@ -57,13 +57,13 @@ curl -H "Authorization: Bearer wrong-key" http://localhost:5555/api/get/authenti
 
 ### Validation Endpoints
 
-Validates request body against a predefined model (requires `name` and `email` fields):
+Validates request data against a predefined model (requires `name` and `email` fields):
 
-- `GET /api/get/validate`
-- `POST /api/post/validate`
-- `PUT /api/put/validate`
-- `DELETE /api/delete/validate`
-- `PATCH /api/patch/validate`
+- `GET /api/get/validate` - Uses query parameters
+- `POST /api/post/validate` - Uses request body
+- `PUT /api/put/validate` - Uses request body
+- `DELETE /api/delete/validate` - Uses query parameters
+- `PATCH /api/patch/validate` - Uses request body
 
 **Responses:**
 - 200 - Validation successful
@@ -71,7 +71,10 @@ Validates request body against a predefined model (requires `name` and `email` f
 
 **Example:**
 ```bash
-# Valid data - returns 200
+# GET with query parameters - returns 200
+curl "http://localhost:5555/api/get/validate?name=John%20Doe&email=john@example.com"
+
+# POST with request body - returns 200
 curl -X POST -H "Content-Type: application/json" \
   -d '{"name":"John Doe","email":"john@example.com"}' \
   http://localhost:5555/api/post/validate

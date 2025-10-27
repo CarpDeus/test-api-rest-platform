@@ -11,15 +11,25 @@ builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { 
+        Title = "Test API Rest Platform", 
+        Version = "v1",
+        Description = "A simple API that returns specific HTTP status codes with authentication and validation capabilities"
+    });
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.MapOpenApi();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test API Rest Platform v1");
+    c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+});
 
 app.UseSerilogRequestLogging();
 app.MapControllers();

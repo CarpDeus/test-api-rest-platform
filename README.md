@@ -1,6 +1,6 @@
 # test-api-rest-platform
 
-A .NET Core Web API application that returns specific HTTP status codes. This application includes Serilog.Sinks.File for logging all requests to file.
+A .NET Core Web API application that returns specific HTTP status codes. This application includes Serilog.Sinks.File for logging all requests to file and Swagger UI for interactive API documentation.
 
 ## Features
 
@@ -9,6 +9,19 @@ A .NET Core Web API application that returns specific HTTP status codes. This ap
 - Authentication endpoint that validates Authorization headers
 - Validation endpoint that validates request bodies against a predefined model
 - Comprehensive logging using Serilog with file output
+- **Swagger UI for interactive API documentation**
+
+## Swagger UI
+
+The API includes Swagger UI for easy exploration and testing of all endpoints. Once the application is running, navigate to the root URL to access the interactive documentation:
+
+**URL:** `http://localhost:5180/` (or your configured port)
+
+The Swagger UI provides:
+- Complete API documentation
+- Interactive testing of all endpoints
+- Request/response examples
+- Schema definitions
 
 ## API Endpoints
 

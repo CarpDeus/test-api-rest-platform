@@ -55,8 +55,15 @@ public class PutController : ControllerBase
 
         if (!ModelState.IsValid)
         {
-            _logger.LogWarning("Validation failed");
-            return BadRequest(new { message = "Validation failed", errors = ModelState });
+            var errors = ModelState
+                .Where(x => x.Value?.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray() ?? Array.Empty<string>()
+                );
+            
+            _logger.LogWarning("Validation failed: {Errors}", errors);
+            return BadRequest(new { message = "Validation failed", errors });
         }
 
         _logger.LogInformation("Validation successful");

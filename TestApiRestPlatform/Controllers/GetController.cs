@@ -49,28 +49,21 @@ public class GetController : ControllerBase
     }
 
     [HttpGet("validate")]
-    public IActionResult Validate([FromQuery] string? name, [FromQuery] string? email)
+    public IActionResult Validate([FromBody] ValidationModel model)
     {
         _logger.LogInformation("Validate request received");
 
-        var model = new ValidationModel { Name = name ?? string.Empty, Email = email ?? string.Empty };
-        
-        if (string.IsNullOrEmpty(name))
+        if (!ModelState.IsValid)
         {
-            _logger.LogWarning("Validation failed - name is required");
-            return BadRequest(new { message = "Validation failed", errors = new { Name = new[] { "The Name field is required." } } });
-        }
-        
-        if (string.IsNullOrEmpty(email))
-        {
-            _logger.LogWarning("Validation failed - email is required");
-            return BadRequest(new { message = "Validation failed", errors = new { Email = new[] { "The Email field is required." } } });
-        }
-        
-        if (!new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(email))
-        {
-            _logger.LogWarning("Validation failed - invalid email");
-            return BadRequest(new { message = "Validation failed", errors = new { Email = new[] { "The Email field is not a valid e-mail address." } } });
+            var errors = ModelState
+                .Where(x => x.Value?.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray() ?? Array.Empty<string>()
+                );
+            
+            _logger.LogWarning("Validation failed: {Errors}", errors);
+            return BadRequest(new { message = "Validation failed", errors });
         }
 
         _logger.LogInformation("Validation successful");

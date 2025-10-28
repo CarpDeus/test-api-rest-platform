@@ -70,32 +70,45 @@ curl -H "Authorization: Bearer wrong-key" http://localhost:5555/api/get/authenti
 
 ### Validation Endpoints
 
-Validates request data against a predefined model (requires `name` and `email` fields):
+Validates request data using FluentValidation with the following rules:
 
-- `GET /api/get/validate` - Uses query parameters
-- `POST /api/post/validate` - Uses request body
-- `PUT /api/put/validate` - Uses request body
-- `DELETE /api/delete/validate` - Uses query parameters
-- `PATCH /api/patch/validate` - Uses request body
+**Required Fields:**
+- `name` - Must be between 3 and 20 characters
+- `email` - Must be a valid email address format
+
+**Optional Fields:**
+- `phoneNumber` - If provided, must be a valid phone number format
+
+All validate endpoints accept JSON body:
+- `GET /api/get/validate`
+- `POST /api/post/validate`
+- `PUT /api/put/validate`
+- `DELETE /api/delete/validate`
+- `PATCH /api/patch/validate`
 
 **Responses:**
 - 200 - Validation successful
-- 400 - Validation failed (missing or invalid fields)
+- 400 - Validation failed with FluentValidation error details
 
 **Example:**
 ```bash
-# GET with query parameters - returns 200
-curl "http://localhost:5555/api/get/validate?name=John%20Doe&email=john@example.com"
-
-# POST with request body - returns 200
+# Valid data with all fields - returns 200
 curl -X POST -H "Content-Type: application/json" \
-  -d '{"name":"John Doe","email":"john@example.com"}' \
-  http://localhost:5555/api/post/validate
+  -d '{"name":"John Doe","email":"john@example.com","phoneNumber":"234-567-8900"}' \
+  http://localhost:5180/api/post/validate
 
-# Invalid data - returns 400
+# Valid data without optional phone - returns 200
 curl -X POST -H "Content-Type: application/json" \
-  -d '{"name":"John Doe"}' \
-  http://localhost:5555/api/post/validate
+  -d '{"name":"Jane","email":"jane@example.com"}' \
+  http://localhost:5180/api/post/validate
+
+# Invalid data - returns 400 with validation errors
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"name":"Jo","email":"invalid-email"}' \
+  http://localhost:5180/api/post/validate
+# Response: {"type":"...","title":"One or more validation errors occurred.","status":400,
+#  "errors":{"Name":["Name must be between 3 and 20 characters"],
+#            "Email":["Email must be a valid email address"]}}
 ```
 
 ## Configuration

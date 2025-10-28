@@ -47,26 +47,4 @@ public class GetController : ControllerBase
         _logger.LogWarning("Authentication failed - header mismatch");
         return StatusCode(403, new { message = "Forbidden - Invalid authorization header" });
     }
-
-    [HttpGet("validate")]
-    public IActionResult Validate([FromBody] ValidationModel model)
-    {
-        _logger.LogInformation("Validate request received");
-
-        if (!ModelState.IsValid)
-        {
-            var errors = ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray() ?? Array.Empty<string>()
-                );
-            
-            _logger.LogWarning("Validation failed: {Errors}", errors);
-            return BadRequest(new { message = "Validation failed", errors });
-        }
-
-        _logger.LogInformation("Validation successful");
-        return Ok(new { message = "Validation successful", data = model });
-    }
 }

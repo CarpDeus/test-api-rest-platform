@@ -80,11 +80,12 @@ Validates request data using FluentValidation with the following rules:
 - `phoneNumber` - If provided, must be a valid phone number format
 
 All validate endpoints accept JSON body:
-- `GET /api/get/validate`
 - `POST /api/post/validate`
 - `PUT /api/put/validate`
 - `DELETE /api/delete/validate`
 - `PATCH /api/patch/validate`
+
+**Note:** GET method does not have a validate endpoint as GET requests cannot contain a request body.
 
 **Responses:**
 - 200 - Validation successful

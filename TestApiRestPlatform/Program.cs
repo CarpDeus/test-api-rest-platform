@@ -1,7 +1,6 @@
 using Serilog;
 using TestApiRestPlatform.Middleware;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +15,6 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 
 // Add FluentValidation
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddEndpointsApiExplorer();

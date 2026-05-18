@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation;
 using TestApiRestPlatform.Models;
 
 namespace TestApiRestPlatform.Controllers;
@@ -9,11 +10,13 @@ public class DeleteController : ControllerBase
 {
     private readonly ILogger<DeleteController> _logger;
     private readonly IConfiguration _configuration;
+    private readonly IValidator<ValidationModel> _validationModelValidator;
 
-    public DeleteController(ILogger<DeleteController> logger, IConfiguration configuration)
+    public DeleteController(ILogger<DeleteController> logger, IConfiguration configuration, IValidator<ValidationModel> validationModelValidator)
     {
         _logger = logger;
         _configuration = configuration;
+        _validationModelValidator = validationModelValidator;
     }
 
     [HttpDelete("{status}")]
@@ -53,13 +56,15 @@ public class DeleteController : ControllerBase
     {
         _logger.LogInformation("Validate request received");
 
-        if (!ModelState.IsValid)
+        var validationResult = _validationModelValidator.Validate(model);
+
+        if (!validationResult.IsValid)
         {
-            var errors = ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
+            var errors = validationResult.Errors
+                .GroupBy(e => e.PropertyName)
                 .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray() ?? Array.Empty<string>()
+                    group => group.Key,
+                    group => group.Select(error => error.ErrorMessage).ToArray()
                 );
             
             _logger.LogWarning("Validation failed: {Errors}", errors);

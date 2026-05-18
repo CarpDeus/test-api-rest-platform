@@ -16,6 +16,10 @@ public class GetController : ControllerBase
         _configuration = configuration;
     }
 
+    /// <summary>
+    /// Returns the requested HTTP status code.
+    /// </summary>
+    /// <param name="status">The HTTP status code to return.</param>
     [HttpGet("{status}")]
     public IActionResult GetStatus(int status)
     {
@@ -23,11 +27,15 @@ public class GetController : ControllerBase
         return StatusCode(status, new { message = $"Returning HTTP status {status}" });
     }
 
+    /// <summary>
+    /// Validates the supplied Authorization header value.
+    /// </summary>
+    /// <param name="authorization">The Authorization header value expected by the API.</param>
     [HttpGet("authenticate")]
-    public IActionResult Authenticate()
+    public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization)
     {
-        var authHeader = Request.Headers["Authorization"].FirstOrDefault();
         var expectedAuth = _configuration["Authentication:ExpectedAuthHeader"];
+        var authHeader = authorization;
 
         var sanitizedAuthHeader = authHeader?.Replace("\n", "").Replace("\r", "") ?? "null";
         _logger.LogInformation("Authenticate request received with auth header: {AuthHeader}", sanitizedAuthHeader);

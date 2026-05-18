@@ -1,9 +1,8 @@
 using Serilog;
 using TestApiRestPlatform.Middleware;
 using FluentValidation;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System.Reflection;
-using TestApiRestPlatform.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +41,6 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT"
     });
-
-    c.OperationFilter<AuthorizationHeaderOperationFilter>();
 });
 
 var app = builder.Build();

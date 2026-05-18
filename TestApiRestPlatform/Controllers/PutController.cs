@@ -19,6 +19,10 @@ public class PutController : ControllerBase
         _validationModelValidator = validationModelValidator;
     }
 
+    /// <summary>
+    /// Returns the requested HTTP status code.
+    /// </summary>
+    /// <param name="status">The HTTP status code to return.</param>
     [HttpPut("{status}")]
     public IActionResult PutStatus(int status)
     {
@@ -26,11 +30,15 @@ public class PutController : ControllerBase
         return StatusCode(status, new { message = $"Returning HTTP status {status}" });
     }
 
+    /// <summary>
+    /// Validates the supplied Authorization header value.
+    /// </summary>
+    /// <param name="authorization">The Authorization header value expected by the API.</param>
     [HttpPut("authenticate")]
-    public IActionResult Authenticate()
+    public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization)
     {
-        var authHeader = Request.Headers["Authorization"].FirstOrDefault();
         var expectedAuth = _configuration["Authentication:ExpectedAuthHeader"];
+        var authHeader = authorization;
 
         var sanitizedAuthHeader = authHeader?.Replace("\n", "").Replace("\r", "") ?? "null";
         _logger.LogInformation("Authenticate request received with auth header: {AuthHeader}", sanitizedAuthHeader);
@@ -51,6 +59,10 @@ public class PutController : ControllerBase
         return StatusCode(403, new { message = "Forbidden - Invalid authorization header" });
     }
 
+    /// <summary>
+    /// Validates the request body using FluentValidation rules.
+    /// </summary>
+    /// <param name="model">The payload to validate.</param>
     [HttpPut("validate")]
     public IActionResult Validate([FromBody] ValidationModel model)
     {

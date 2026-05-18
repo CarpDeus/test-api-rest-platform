@@ -1,6 +1,8 @@
 using Serilog;
 using TestApiRestPlatform.Middleware;
 using FluentValidation;
+using Microsoft.OpenApi;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,20 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Test API Rest Platform", 
         Version = "v1",
         Description = "A simple API that returns specific HTTP status codes with authentication and validation capabilities"
+    });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Enter the Authorization header value.",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
     });
 });
 

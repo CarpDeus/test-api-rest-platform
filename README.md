@@ -1,6 +1,6 @@
 # test-api-rest-platform
 
-A .NET Core Web API application that returns specific HTTP status codes. This application includes Serilog.Sinks.File for logging all requests to file and Swagger UI for interactive API documentation.
+A .NET 10 Web API application that returns specific HTTP status codes. This application includes Serilog.Sinks.File for logging all requests to file and Swagger UI for interactive API documentation.
 
 ## Features
 

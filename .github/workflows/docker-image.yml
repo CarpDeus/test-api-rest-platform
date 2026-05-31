@@ -4,42 +4,31 @@ on:
   push:
     branches:
       - main
-      - master
   workflow_dispatch:
 
 jobs:
-  docker:
+  build-and-push:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
-      - name: Checkout repository
+      # Step 1: Download repository source code
+      - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Set up Buildx for advanced build features
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
+      # Step 3: Login to Docker Hub using repository secrets
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/test-api-rest-platform
-          tags: |
-            type=raw,value=latest
-            type=sha
-
-      - name: Build and push Docker image
+      # Step 4: Build the image from your Dockerfile and push it
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/rest-api-test-site:latest

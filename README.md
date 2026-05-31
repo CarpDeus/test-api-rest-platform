@@ -128,6 +128,22 @@ dotnet run
 
 The application will start on http://localhost:5180 by default (or as configured in launchSettings.json). The Swagger UI will automatically open in your browser.
 
+## Running in Docker
+
+Build the image from the repository root:
+
+```bash
+docker build -t test-api-rest-platform .
+```
+
+Run the container and map port `8080`:
+
+```bash
+docker run --rm -p 8080:8080 test-api-rest-platform
+```
+
+Open `http://localhost:8080/` to access Swagger UI.
+
 ## Logging
 
 All API requests are logged using structured logging with Serilog. Logs are written to both:

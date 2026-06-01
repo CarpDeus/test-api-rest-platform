@@ -79,3 +79,5 @@ Thumbs.db
 # Application logs
 logs/
 *.txt
+/TestApiRestPlatform/Properties/PublishProfiles/https___dr.secure-scalable.solutions.pubxml
+/TestApiRestPlatform/Properties/PublishProfiles/registry.hub.docker.com_Carpdeus.pubxml

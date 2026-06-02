@@ -58,7 +58,7 @@ public class DeleteController : ControllerBase
     /// <remarks>Allowed DELETE status codes: 200, 202, 204, 400, 401, 403, 404, 409, 500.</remarks>
     [HttpDelete("authenticate")]
     [HttpDelete("authenticate/{status}")]
-    public IActionResult Authenticate(int status = StatusCodes.Status200OK, [FromHeader(Name = "Authorization")] string? authorization)
+    public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization, int status = StatusCodes.Status200OK)
     {
         var statusValidationResult = ValidateStatusCode(status);
         if (statusValidationResult is not null)
@@ -107,7 +107,7 @@ public class DeleteController : ControllerBase
                     group => group.Key,
                     group => group.Select(error => error.ErrorMessage).ToArray()
                 );
-            
+
             _logger.LogWarning("Validation failed: {Errors}", errors);
             return BadRequest(new { message = "Validation failed", errors });
         }

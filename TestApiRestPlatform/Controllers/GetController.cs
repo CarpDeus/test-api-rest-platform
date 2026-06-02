@@ -56,7 +56,7 @@ public class GetController : ControllerBase
     /// <remarks>Allowed GET status codes: 200, 206, 301, 302, 304, 400, 401, 403, 404, 500.</remarks>
     [HttpGet("authenticate")]
     [HttpGet("authenticate/{status}")]
-    public IActionResult Authenticate(int status = StatusCodes.Status200OK, [FromHeader(Name = "Authorization")] string? authorization)
+    public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization, int status = StatusCodes.Status200OK)
     {
         var statusValidationResult = ValidateStatusCode(status);
         if (statusValidationResult is not null)

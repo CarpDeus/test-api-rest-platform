@@ -59,7 +59,7 @@ public class PutController : ControllerBase
     /// <remarks>Allowed PUT status codes: 200, 201, 204, 400, 401, 403, 404, 409, 422, 500.</remarks>
     [HttpPut("authenticate")]
     [HttpPut("authenticate/{status}")]
-    public IActionResult Authenticate(int status = StatusCodes.Status200OK, [FromHeader(Name = "Authorization")] string? authorization)
+    public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization, int status = StatusCodes.Status200OK)
     {
         var statusValidationResult = ValidateStatusCode(status);
         if (statusValidationResult is not null)
@@ -108,7 +108,7 @@ public class PutController : ControllerBase
                     group => group.Key,
                     group => group.Select(error => error.ErrorMessage).ToArray()
                 );
-            
+
             _logger.LogWarning("Validation failed: {Errors}", errors);
             return BadRequest(new { message = "Validation failed", errors });
         }

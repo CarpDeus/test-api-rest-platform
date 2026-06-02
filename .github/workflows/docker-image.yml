@@ -32,7 +32,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/secure-scalable-solutions
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/test-api-rest-platform
           tags: |
             type=ref,event=branch
             type=sha

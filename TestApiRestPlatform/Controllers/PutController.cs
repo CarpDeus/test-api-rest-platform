@@ -57,8 +57,9 @@ public class PutController : ControllerBase
     /// <param name="status">The HTTP status code to return.</param>
     /// <param name="authorization">The Authorization header value expected by the API.</param>
     /// <remarks>Allowed PUT status codes: 200, 201, 204, 400, 401, 403, 404, 409, 422, 500.</remarks>
+    [HttpPut("authenticate")]
     [HttpPut("authenticate/{status}")]
-    public IActionResult Authenticate(int status, [FromHeader(Name = "Authorization")] string? authorization)
+    public IActionResult Authenticate(int status = StatusCodes.Status200OK, [FromHeader(Name = "Authorization")] string? authorization)
     {
         var statusValidationResult = ValidateStatusCode(status);
         if (statusValidationResult is not null)

@@ -33,9 +33,10 @@ public class DeleteController : ControllerBase
     /// <summary>
     /// Validates the supplied Authorization header value.
     /// </summary>
+    /// <param name="status">The HTTP status code to return.</param>
     /// <param name="authorization">The Authorization header value expected by the API.</param>
-    [HttpDelete("authenticate")]
-    public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization)
+    [HttpDelete("authenticate/{status}")]
+    public IActionResult Authenticate(int status, [FromHeader(Name = "Authorization")] string? authorization)
     {
         var expectedAuth = _configuration["Authentication:ExpectedAuthHeader"];
         var authHeader = authorization;
@@ -52,7 +53,7 @@ public class DeleteController : ControllerBase
         if (authHeader == expectedAuth)
         {
             _logger.LogInformation("Authentication successful");
-            return Ok(new { message = "Authentication successful" });
+            return StatusCode(status, new { message = $"Returning authorized HTTP status {status}" });
         }
 
         _logger.LogWarning("Authentication failed - header mismatch");

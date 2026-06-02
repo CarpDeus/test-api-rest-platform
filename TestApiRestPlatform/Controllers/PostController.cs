@@ -8,6 +8,18 @@ namespace TestApiRestPlatform.Controllers;
 [Route("api/[controller]")]
 public class PostController : ControllerBase
 {
+    private static readonly int[] AllowedStatusCodes =
+    [
+        StatusCodes.Status201Created,
+        StatusCodes.Status202Accepted,
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status401Unauthorized,
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status409Conflict,
+        StatusCodes.Status422UnprocessableEntity,
+        StatusCodes.Status500InternalServerError
+    ];
+
     private readonly ILogger<PostController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IValidator<ValidationModel> _validationModelValidator;
@@ -23,9 +35,16 @@ public class PostController : ControllerBase
     /// Returns the requested HTTP status code.
     /// </summary>
     /// <param name="status">The HTTP status code to return.</param>
+    /// <remarks>Allowed POST status codes: 201, 202, 400, 401, 403, 409, 422, 500.</remarks>
     [HttpPost("{status}")]
     public IActionResult PostStatus(int status)
     {
+        var statusValidationResult = ValidateStatusCode(status);
+        if (statusValidationResult is not null)
+        {
+            return statusValidationResult;
+        }
+
         _logger.LogInformation("POST request received for status: {Status}", status);
         return StatusCode(status, new { message = $"Returning HTTP status {status}" });
     }
@@ -33,10 +52,19 @@ public class PostController : ControllerBase
     /// <summary>
     /// Validates the supplied Authorization header value.
     /// </summary>
+    /// <param name="status">The HTTP status code to return.</param>
     /// <param name="authorization">The Authorization header value expected by the API.</param>
+    /// <remarks>Allowed POST status codes: 201, 202, 400, 401, 403, 409, 422, 500.</remarks>
     [HttpPost("authenticate")]
-    public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization)
+    [HttpPost("authenticate/{status}")]
+    public IActionResult Authenticate(int status = StatusCodes.Status200OK, [FromHeader(Name = "Authorization")] string? authorization)
     {
+        var statusValidationResult = ValidateStatusCode(status);
+        if (statusValidationResult is not null)
+        {
+            return statusValidationResult;
+        }
+
         var expectedAuth = _configuration["Authentication:ExpectedAuthHeader"];
         var authHeader = authorization;
 
@@ -52,7 +80,7 @@ public class PostController : ControllerBase
         if (authHeader == expectedAuth)
         {
             _logger.LogInformation("Authentication successful");
-            return Ok(new { message = "Authentication successful" });
+            return StatusCode(status, new { message = $"Returning authorized HTTP status {status}" });
         }
 
         _logger.LogWarning("Authentication failed - header mismatch");
@@ -85,5 +113,19 @@ public class PostController : ControllerBase
 
         _logger.LogInformation("Validation successful");
         return Ok(new { message = "Validation successful", data = model });
+    }
+
+    private IActionResult? ValidateStatusCode(int status)
+    {
+        if (AllowedStatusCodes.Contains(status))
+        {
+            return null;
+        }
+
+        return BadRequest(new
+        {
+            message = $"Status code {status} is not valid for POST requests.",
+            allowedStatusCodes = AllowedStatusCodes
+        });
     }
 }

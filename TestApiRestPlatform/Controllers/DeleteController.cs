@@ -8,6 +8,19 @@ namespace TestApiRestPlatform.Controllers;
 [Route("api/[controller]")]
 public class DeleteController : ControllerBase
 {
+    private static readonly int[] AllowedStatusCodes =
+    [
+        StatusCodes.Status200OK,
+        StatusCodes.Status202Accepted,
+        StatusCodes.Status204NoContent,
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status401Unauthorized,
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound,
+        StatusCodes.Status409Conflict,
+        StatusCodes.Status500InternalServerError
+    ];
+
     private readonly ILogger<DeleteController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IValidator<ValidationModel> _validationModelValidator;
@@ -23,9 +36,16 @@ public class DeleteController : ControllerBase
     /// Returns the requested HTTP status code.
     /// </summary>
     /// <param name="status">The HTTP status code to return.</param>
+    /// <remarks>Allowed DELETE status codes: 200, 202, 204, 400, 401, 403, 404, 409, 500.</remarks>
     [HttpDelete("{status}")]
     public IActionResult DeleteStatus(int status)
     {
+        var statusValidationResult = ValidateStatusCode(status);
+        if (statusValidationResult is not null)
+        {
+            return statusValidationResult;
+        }
+
         _logger.LogInformation("DELETE request received for status: {Status}", status);
         return StatusCode(status, new { message = $"Returning HTTP status {status}" });
     }
@@ -33,10 +53,19 @@ public class DeleteController : ControllerBase
     /// <summary>
     /// Validates the supplied Authorization header value.
     /// </summary>
+    /// <param name="status">The HTTP status code to return.</param>
     /// <param name="authorization">The Authorization header value expected by the API.</param>
+    /// <remarks>Allowed DELETE status codes: 200, 202, 204, 400, 401, 403, 404, 409, 500.</remarks>
     [HttpDelete("authenticate")]
-    public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization)
+    [HttpDelete("authenticate/{status}")]
+    public IActionResult Authenticate(int status = StatusCodes.Status200OK, [FromHeader(Name = "Authorization")] string? authorization)
     {
+        var statusValidationResult = ValidateStatusCode(status);
+        if (statusValidationResult is not null)
+        {
+            return statusValidationResult;
+        }
+
         var expectedAuth = _configuration["Authentication:ExpectedAuthHeader"];
         var authHeader = authorization;
 
@@ -52,7 +81,7 @@ public class DeleteController : ControllerBase
         if (authHeader == expectedAuth)
         {
             _logger.LogInformation("Authentication successful");
-            return Ok(new { message = "Authentication successful" });
+            return StatusCode(status, new { message = $"Returning authorized HTTP status {status}" });
         }
 
         _logger.LogWarning("Authentication failed - header mismatch");
@@ -85,5 +114,19 @@ public class DeleteController : ControllerBase
 
         _logger.LogInformation("Validation successful");
         return Ok(new { message = "Validation successful", data = model });
+    }
+
+    private IActionResult? ValidateStatusCode(int status)
+    {
+        if (AllowedStatusCodes.Contains(status))
+        {
+            return null;
+        }
+
+        return BadRequest(new
+        {
+            message = $"Status code {status} is not valid for DELETE requests.",
+            allowedStatusCodes = AllowedStatusCodes
+        });
     }
 }

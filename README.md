@@ -116,7 +116,8 @@ curl -X POST -H "Content-Type: application/json" \
 
 Edit `appsettings.json` to configure:
 
-- **Authentication.ExpectedAuthHeader**: The expected Authorization header value (default: "Bearer test-secret-key")
+- **Authentication.ExpectedAuthHeader**: The expected Authorization header value in appsettings (default: "******")
+- **ExpectedAuthHeader** (environment variable): Overrides appsettings when set
 - **Serilog**: Logging configuration including file output location and format
 
 ## Running the Application

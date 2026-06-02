@@ -66,7 +66,8 @@ public class DeleteController : ControllerBase
             return statusValidationResult;
         }
 
-        var expectedAuth = _configuration["Authentication:ExpectedAuthHeader"];
+        var expectedAuth = Environment.GetEnvironmentVariable("ExpectedAuthHeader")
+            ?? _configuration["Authentication:ExpectedAuthHeader"];
         var authHeader = authorization;
 
         var sanitizedAuthHeader = authHeader?.Replace("\n", "").Replace("\r", "") ?? "null";

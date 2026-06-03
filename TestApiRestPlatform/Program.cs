@@ -1,5 +1,6 @@
 using Serilog;
 using TestApiRestPlatform.Middleware;
+using TestApiRestPlatform.Authentication;
 using FluentValidation;
 using Microsoft.OpenApi;
 using System.Reflection;
@@ -18,6 +19,11 @@ builder.Services.AddControllers();
 
 // Add FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+// Add Authentication
+builder.Services.AddAuthentication("CustomScheme")
+    .AddScheme<CustomAuthenticationOptions, CustomAuthenticationHandler>("CustomScheme", null);
+builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -57,6 +63,10 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test API Rest Platform v1");
     c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
 });
+
+// Add authentication and authorization middleware
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Add custom request logging middleware
 app.UseMiddleware<RequestLoggingMiddleware>();

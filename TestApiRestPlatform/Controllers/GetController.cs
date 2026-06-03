@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TestApiRestPlatform.Models;
 
 namespace TestApiRestPlatform.Controllers;
@@ -56,6 +57,7 @@ public class GetController : ControllerBase
     /// <remarks>Allowed GET status codes: 200, 206, 301, 302, 304, 400, 401, 403, 404, 500.</remarks>
     [HttpGet("authenticate")]
     [HttpGet("authenticate/{status}")]
+    [Authorize]
     public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization, int status = StatusCodes.Status200OK)
     {
         var statusValidationResult = ValidateStatusCode(status);

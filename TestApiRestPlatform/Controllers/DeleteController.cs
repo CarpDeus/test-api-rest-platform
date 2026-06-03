@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using TestApiRestPlatform.Models;
 
@@ -58,6 +59,7 @@ public class DeleteController : ControllerBase
     /// <remarks>Allowed DELETE status codes: 200, 202, 204, 400, 401, 403, 404, 409, 500.</remarks>
     [HttpDelete("authenticate")]
     [HttpDelete("authenticate/{status}")]
+    [Authorize]
     public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization, int status = StatusCodes.Status200OK)
     {
         var statusValidationResult = ValidateStatusCode(status);
@@ -66,27 +68,27 @@ public class DeleteController : ControllerBase
             return statusValidationResult;
         }
 
-        var expectedAuth = Environment.GetEnvironmentVariable("ExpectedAuthHeader")
-            ?? _configuration["Authentication:ExpectedAuthHeader"];
-        var authHeader = authorization;
+        //var expectedAuth = Environment.GetEnvironmentVariable("ExpectedAuthHeader")
+        //    ?? _configuration["Authentication:ExpectedAuthHeader"];
+        //var authHeader = authorization;
 
-        var sanitizedAuthHeader = authHeader?.Replace("\n", "").Replace("\r", "") ?? "null";
-        _logger.LogInformation("Authenticate request received with auth header: {AuthHeader}", sanitizedAuthHeader);
+        //var sanitizedAuthHeader = authHeader?.Replace("\n", "").Replace("\r", "") ?? "null";
+        //_logger.LogInformation("Authenticate request received with auth header: {AuthHeader}", sanitizedAuthHeader);
 
-        if (string.IsNullOrEmpty(authHeader))
-        {
-            _logger.LogWarning("No authorization header provided");
-            return StatusCode(401, new { message = "Unauthorized - No authorization header provided" });
-        }
+        //if (string.IsNullOrEmpty(authHeader))
+        //{
+        //    _logger.LogWarning("No authorization header provided");
+        //    return StatusCode(401, new { message = "Unauthorized - No authorization header provided" });
+        //}
 
-        if (authHeader == expectedAuth)
-        {
-            _logger.LogInformation("Authentication successful");
+        //if (authHeader == expectedAuth)
+        //{
+        //    _logger.LogInformation("Authentication successful");
             return StatusCode(status, new { message = $"Returning authorized HTTP status {status}" });
-        }
+        //}
 
-        _logger.LogWarning("Authentication failed - header mismatch");
-        return StatusCode(403, new { message = "Forbidden - Invalid authorization header" });
+        //_logger.LogWarning("Authentication failed - header mismatch");
+        //return StatusCode(403, new { message = "Forbidden - Invalid authorization header" });
     }
 
     /// <summary>

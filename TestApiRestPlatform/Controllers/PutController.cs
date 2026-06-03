@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using TestApiRestPlatform.Models;
 
@@ -59,6 +60,7 @@ public class PutController : ControllerBase
     /// <remarks>Allowed PUT status codes: 200, 201, 204, 400, 401, 403, 404, 409, 422, 500.</remarks>
     [HttpPut("authenticate")]
     [HttpPut("authenticate/{status}")]
+    [Authorize]
     public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization, int status = StatusCodes.Status200OK)
     {
         var statusValidationResult = ValidateStatusCode(status);

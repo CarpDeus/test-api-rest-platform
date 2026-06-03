@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using TestApiRestPlatform.Models;
 
@@ -57,6 +58,7 @@ public class PostController : ControllerBase
     /// <remarks>Allowed POST status codes: 201, 202, 400, 401, 403, 409, 422, 500.</remarks>
     [HttpPost("authenticate")]
     [HttpPost("authenticate/{status}")]
+    [Authorize]
     public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization, int status = StatusCodes.Status200OK)
     {
         var statusValidationResult = ValidateStatusCode(status);

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using TestApiRestPlatform.Models;
 
@@ -58,6 +59,7 @@ public class DeleteController : ControllerBase
     /// <remarks>Allowed DELETE status codes: 200, 202, 204, 400, 401, 403, 404, 409, 500.</remarks>
     [HttpDelete("authenticate")]
     [HttpDelete("authenticate/{status}")]
+    [Authorize]
     public IActionResult Authenticate([FromHeader(Name = "Authorization")] string? authorization, int status = StatusCodes.Status200OK)
     {
         var statusValidationResult = ValidateStatusCode(status);
